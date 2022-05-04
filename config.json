@@ -1,0 +1,10 @@
+{
+  "project_id" : "nlp-masters-project",
+  "dataset_id" : "news_data",
+  "table_id" : "raw_news",
+  "page_count" : 1,
+  "api_key_filename" : "mediastack.json",
+  "api_key_bucket_name" : "keys-and-passwords",
+  "url_base" : "http://api.mediastack.com/v1/news",
+  "page_limit" : 100
+}
