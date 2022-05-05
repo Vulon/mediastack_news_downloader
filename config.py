@@ -12,6 +12,7 @@ class BaseConfig(Schema):
     api_key_bucket_name = fields.Str(required = True)
     url_base = fields.Str(required = True)
     page_limit = fields.Int(required = False)
+    output_topic = fields.Str(required = True)
 
     @post_load
     def make_config(self, data, **kwargs):

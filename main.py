@@ -30,9 +30,13 @@ def main(*args, **kwargs):
     parser.add_argument('-d', '--dataset_id', type=str, help='A dataset id for BigQuery table', default=cfg.dataset_id)
     parser.add_argument('-t', '--table_id', type=str, help='A table name for BigQuery', default=cfg.table_id)
     parser.add_argument('-pg', '--page_count', type=int, help='A number of pages to download per session', default=cfg.page_count)
+    parser.add_argument('-pt', '--publish_topic', type=str, help='A name of the topic to publish to', default=cfg.output_topic)
     cli_args = parser.parse_args()
 
     full_table_name = "{}.{}.{}".format(cli_args.project_id, cli_args.dataset_id, cli_args.table_id)
+    publisher = pubsub_v1.PublisherClient()
+    topic_path = publisher.topic_path(cli_args.project_id, cli_args.publish_topic)
+
     api_key = get_mediastack_api_key(cfg.api_key_filename, cfg.api_key_bucket_name)
     url = cfg.url_base
     date = datetime.datetime.now() - datetime.timedelta(1)
@@ -99,6 +103,10 @@ def main(*args, **kwargs):
 
         except Exception as e:
             logging.exception(e)
+
+    future = publisher.publish(topic_path, b'Mediastack')
+    result = future.result()
+    logging.info(result)
 
 if __name__ == "__main__":
     main()

@@ -6,5 +6,6 @@
   "api_key_filename" : "mediastack.json",
   "api_key_bucket_name" : "keys-and-passwords",
   "url_base" : "http://api.mediastack.com/v1/news",
-  "page_limit" : 100
+  "page_limit" : 100,
+  "output_topic" : "news_raw_downloaded_topic"
 }
