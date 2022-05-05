@@ -1,5 +1,6 @@
 from google.cloud import bigquery
-# from google.cloud import pubsub_v1
+from google.cloud import pubsub_v1
+import google.cloud.logging
 import requests
 import datetime
 import logging
@@ -8,11 +9,20 @@ from utils import get_mediastack_api_key
 from config import load_config
 
 
-logger = logging.getLogger(__name__)
+gc_logger = google.cloud.logging.Client()
+gc_logger.setup_logging()
+import logging
 
 
 def main(*args, **kwargs):
-    logger.info("Mediastack download cron started")
+    """
+    Entry point.
+    Downloads news from the REST API and stores them in the BigQuery table.
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    logging.info("Mediastack download cron started")
     cfg = load_config()
     parser = argparse.ArgumentParser(description="Scheduled mediastack news donwloader")
 
@@ -76,19 +86,19 @@ def main(*args, **kwargs):
                     "processed_flag": False
                 })
             if len(rows_to_insert) < 1:
-                logger.info("No new rows to insert")
+                logging.warning("No new rows to insert")
                 continue
             errors = client.insert_rows_json(table, rows_to_insert)
-            logger.info(f"Writing {len(rows_to_insert)} rows to table")
-            print(f"Writing {len(rows_to_insert)} rows to table")
-            print(errors)
-            for e in errors:
-                logger.error(e)
+            logging.info(f"Writing {len(rows_to_insert)} rows to table")
+            # print(f"Writing {len(rows_to_insert)} rows to table")
 
-            logger.info(f"Read {len(entries_list)} entries")
+            for e in errors:
+                logging.error(e)
+
+            logging.info(f"Read {len(entries_list)} entries")
 
         except Exception as e:
-            logger.exception(e)
+            logging.exception(e)
 
 if __name__ == "__main__":
     main()
